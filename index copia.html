@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partitella TV - Archivio Live</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col">
+    <header class="p-6 text-center border-b border-green-500 bg-gray-900 shadow-lg flex justify-center items-center">
+        <img src="partitella live.png" alt="Partitella Live" class="h-12 md:h-16 object-contain">
+    </header>
+    
+    <main class="max-w-6xl mx-auto p-6 flex-grow w-full">
+        <div class="mb-8 bg-gray-900 border border-gray-800 rounded-xl p-6 text-center shadow-md">
+            <h2 class="text-xl font-semibold mb-3 text-green-400">Cartella Condivisa Google Drive</h2>
+            <p class="text-gray-300 text-sm mb-4">Accedi direttamente all'archivio completo di tutte le partite grezze, montaggi e foto della serata.</p>
+            <!-- Sostituisci questo link con il link di condivisione della tua cartella Google Drive -->
+            <a href="https://drive.google.com/drive/folders/1T5D0PWCoP_0adphvPgZUMLuFkkQPDcuO?usp=drive_link" target="_blank" class="inline-block bg-green-600 hover:bg-green-500 text-black font-bold px-6 py-3 rounded-lg transition-colors shadow">
+                Apri Archivio Drive 📂
+            </a>
+        </div>
+
+        <div class="mt-8">
+            <h3 class="text-lg font-bold text-gray-300 mb-4 border-l-4 border-green-500 pl-3">Anteprima rapida cartella</h3>
+            <!-- Box di incorporamento Google Drive (Cartella) -->
+            <div class="w-full h-[600px] bg-gray-900 rounded-xl overflow-hidden border border-gray-800 shadow-lg">
+                <!-- Sostituisci l'URL dell'iframe con il link "Incorpora cartella" di Google Drive se disponibile, o usa il link sopra -->
+                <iframe src="https://drive.google.com/embeddedfolderview?id=1T5D0PWCoP_0adphvPgZUMLuFkkQPDcuO#grid" class="w-full h-full border-0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-4 text-center text-xs text-gray-600 border-t border-gray-900">
+        Partitella Hub — Powered by Sbrus
+    </footer>
+</body>
+</html>
