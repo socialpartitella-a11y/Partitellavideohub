@@ -68,7 +68,7 @@
 
         <div id="errorMessage" class="hidden bg-red-950/50 border border-red-800 text-red-200 p-4 rounded-2xl text-center text-sm"></div>
 
-        <!-- Lista Card Partite -->
+        <!-- Lista Card Partita -->
         <div id="videosGrid" class="space-y-3"></div>
 
         <!-- Empty State -->
@@ -168,7 +168,7 @@
         function parseVideoItem(item) {
             const rawFileName = item.filename;
             const cleanName = item.title;
-            let teamA = "", teamB = "", matchLabel = "", phase = "Partite";
+            let teamA = "", teamB = "", matchLabel = "", phase = "Partita";
 
             if (cleanName.includes(" vs ")) {
                 const parts = cleanName.split(" vs ");
@@ -178,7 +178,7 @@
                 const subParts = rest.split(" - ");
                 teamB = (subParts[0] || "").trim().replace(/^"|"$/g, '');
                 matchLabel = (subParts[1] || "").trim();
-                phase = (subParts[2] || "").trim() || "Partite";
+                phase = (subParts[2] || "").trim() || "Partita";
             } else {
                 teamA = cleanName;
             }
@@ -220,7 +220,7 @@
                 card.innerHTML = `
                     <div class="flex items-center justify-between gap-2">
                         <span class="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md ${badgeColor}">
-                            ${v.phase || 'PARTITE'} ${v.matchLabel ? '• ' + v.matchLabel : ''}
+                            ${v.phase || 'PARTITA'} ${v.matchLabel ? '• ' + v.matchLabel : ''}
                         </span>
                     </div>
 
