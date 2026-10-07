@@ -13,7 +13,7 @@
 </head>
 <body class="bg-[#0b0c10] text-gray-100 min-h-screen flex flex-col font-sans selection:bg-orange-500 selection:text-white">
 
-    <!-- Header con Logo Partitella Live (ottimizzato mobile) -->
+    <!-- Header con Logo Partitella Live -->
     <header class="w-full bg-[#121318] border-b border-gray-800/80 py-3 px-4 flex flex-col items-center justify-center sticky top-0 z-30 shadow-md">
         <img src="partitella live.png" alt="Partitella Live" class="h-14 sm:h-16 w-auto object-contain drop-shadow">
     </header>
@@ -60,12 +60,54 @@
         <!-- Lista Card Partite -->
         <div id="videosGrid" class="space-y-3"></div>
 
-        <!-- Empty State (nessun risultato) -->
+        <!-- Empty State -->
         <div id="noResults" class="hidden text-center py-16 text-gray-500 space-y-2">
             <p class="text-3xl">⚽</p>
             <p class="text-sm">Nessuna partita trovata.</p>
         </div>
     </main>
+
+    <!-- Overlay Video Player Nativo Partitella (con tasto Torna Indietro garantito) -->
+    <div id="playerOverlay" class="hidden fixed inset-0 z-50 bg-black flex flex-col justify-between">
+        
+        <!-- Barra Superiore con tasto Torna Indietro ben visibile -->
+        <div class="w-full bg-[#121318]/90 backdrop-blur border-b border-gray-800 px-4 py-3 flex items-center justify-between z-10">
+            <button 
+                onclick="closePlayer()" 
+                class="flex items-center gap-2 bg-gray-800 active:bg-gray-700 text-white text-xs font-bold px-3 py-2 rounded-xl border border-gray-700 cursor-pointer">
+                <span>←</span> Torna all'elenco
+            </button>
+            <span id="playerTitle" class="text-xs sm:text-sm font-bold text-gray-300 truncate max-w-[200px] sm:max-w-md px-2"></span>
+            <button 
+                onclick="closePlayer()" 
+                class="w-8 h-8 rounded-full bg-gray-800 active:bg-gray-700 flex items-center justify-center text-gray-300 font-bold text-sm cursor-pointer">
+                ✕
+            </button>
+        </div>
+
+        <!-- Area Video Centrale -->
+        <div class="flex-grow flex items-center justify-center p-2 sm:p-4 bg-black">
+            <video 
+                id="nativeVideo" 
+                class="w-full max-h-[80vh] max-w-4xl rounded-xl object-contain bg-black shadow-2xl" 
+                controls 
+                playsinline 
+                preload="auto">
+                Il tuo browser non supporta il tag video.
+            </video>
+        </div>
+
+        <!-- Barra Inferiore con Tasto Scarica Diretto -->
+        <div class="w-full bg-[#121318]/90 border-t border-gray-800 p-3 flex justify-center">
+            <a 
+                id="playerDownloadBtn" 
+                href="#" 
+                target="_blank" 
+                class="bg-orange-500 active:bg-orange-600 text-black font-black text-xs py-2.5 px-6 rounded-xl transition flex items-center gap-2">
+                ⬇ SCARICA QUESTA PARTITA
+            </a>
+        </div>
+    </div>
 
     <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-900 bg-[#0d0e12]">
         Partitella Hub — Powered by Sbrus
@@ -142,10 +184,8 @@
                 matchLabel,
                 phase,
                 createdTime: file.createdTime,
-                // Riproduzione nativa senza barre o iframe bloccanti
-                watchUrl: `https://drive.google.com/file/d/${file.id}/view`,
-                // Endpoint binario diretto via API: scarica subito l'MP4 senza avviso virus di Google
-                downloadUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`
+                // Flusso binario diretto: usato sia per il player HTML5 nativo che per il download
+                streamUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`
             };
         }
 
@@ -192,15 +232,13 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
-                        <a 
-                            href="${v.watchUrl}" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center cursor-pointer">
+                        <button 
+                            onclick="openPlayer('${v.streamUrl}', '${v.rawName.replace(/'/g, "\\'")}')" 
+                            class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
                             ▶ GUARDA
-                        </a>
+                        </button>
                         <a 
-                            href="${v.downloadUrl}" 
+                            href="${v.streamUrl}" 
                             download="${v.rawName}.mp4"
                             target="_blank" 
                             rel="noopener noreferrer"
@@ -236,6 +274,42 @@
             filterVideos();
             input.focus();
         }
+
+        // GESTIONE PLAYER INTERNO CON TASTO INDIETRO GARANTITO
+        function openPlayer(streamUrl, title) {
+            const overlay = document.getElementById('playerOverlay');
+            const video = document.getElementById('nativeVideo');
+            const titleEl = document.getElementById('playerTitle');
+            const downloadBtn = document.getElementById('playerDownloadBtn');
+
+            titleEl.textContent = title;
+            downloadBtn.href = streamUrl;
+            downloadBtn.setAttribute('download', `${title}.mp4`);
+
+            video.src = streamUrl;
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Avvia la riproduzione
+            video.play().catch(e => console.log("Avvio manuale richiesto"));
+        }
+
+        function closePlayer() {
+            const overlay = document.getElementById('playerOverlay');
+            const video = document.getElementById('nativeVideo');
+
+            video.pause();
+            video.removeAttribute('src'); // interrompe subito il download dello stream
+            video.load();
+
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Tasto Escape da tastiera
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePlayer();
+        });
 
         document.addEventListener('DOMContentLoaded', fetchVideos);
     </script>
