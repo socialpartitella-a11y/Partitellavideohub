@@ -70,7 +70,7 @@
         <!-- Empty State -->
         <div id="noResults" class="hidden text-center py-16 text-gray-500 space-y-2">
             <p class="text-3xl">⚽</p>
-            <p class="text-sm">Nessuna partita trovata.</p>
+            <p class="text-sm">Nessuna partita disponibile al momento.</p>
         </div>
     </main>
 
@@ -92,25 +92,24 @@
             </button>
         </div>
 
-        <!-- Area Video Centrale -->
+        <!-- Area Video Centrale con tag nativo -->
         <div class="flex-grow flex items-center justify-center p-2 sm:p-4 bg-black">
             <video 
                 id="nativeVideo" 
                 class="w-full max-h-[75vh] max-w-4xl rounded-xl object-contain bg-black shadow-2xl" 
                 controls 
                 playsinline 
-                preload="auto">
-                Il tuo browser non supporta il tag video.
+                preload="metadata">
+                Il tuo browser non supporta la riproduzione video.
             </video>
         </div>
 
-        <!-- Barra Inferiore con Tasto Scarica via Drive (Alternativa B) -->
+        <!-- Barra Inferiore con Tasto Scarica Diretto -->
         <div class="w-full bg-[#121318]/95 border-t border-gray-800 px-4 pt-3 safe-bottom flex justify-center">
             <a 
                 id="playerDownloadBtn" 
                 href="#" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                download
                 class="w-full sm:w-auto max-w-xs bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 text-center shadow-lg">
                 ⬇ SCARICA QUESTA PARTITA
             </a>
@@ -122,8 +121,8 @@
     </footer>
 
     <script>
-        const API_KEY = 'AIzaSyAWqT48D2fiOxr3G7Cxlc1es4hR9sfHBZw';
-        const FOLDER_ID = '1T5D0PWCoP_0adphvPgZUMLuFkkQPDcuO';
+        // CONFIGURAZIONE CLOUDFLARE R2
+        const R2_PUBLIC_URL = 'https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev';
 
         let allVideos = [];
 
@@ -138,37 +137,55 @@
             refreshIcon.classList.add('inline-block', 'animate-spin');
             errorBox.classList.add('hidden');
 
-            const query = `'${FOLDER_ID}' in parents and trashed = false`;
-            const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&orderBy=createdTime desc&fields=files(id,name,mimeType,createdTime,size)&key=${API_KEY}`;
-
             try {
-                const res = await fetch(url);
+                // Interroga il bucket pubblico R2 per ottenere la lista degli oggetti (formato S3 XML)
+                const res = await fetch(R2_PUBLIC_URL);
                 if (!res.ok) {
-                    const errData = await res.json();
-                    throw new Error(errData.error?.message || `Errore HTTP ${res.status}`);
+                    throw new Error(`Impossibile raggiungere il bucket (${res.status})`);
                 }
-                const data = await res.json();
-                
-                const files = (data.files || []).filter(f => 
-                    (f.mimeType && f.mimeType.startsWith('video/')) || 
-                    /\.(mp4|mov|mkv|webm)$/i.test(f.name)
-                );
 
-                allVideos = files.map(file => parseVideoItem(file));
+                const xmlText = await res.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+
+                const contents = xmlDoc.querySelectorAll("Contents");
+                const items = [];
+
+                contents.forEach(node => {
+                    const key = node.querySelector("Key")?.textContent || "";
+                    const lastModified = node.querySelector("LastModified")?.textContent || "";
+                    const size = node.querySelector("Size")?.textContent || "0";
+
+                    // Considera solo file video
+                    if (/\.(mp4|mov|mkv|webm)$/i.test(key)) {
+                        items.push({
+                            key,
+                            lastModified: new Date(lastModified),
+                            size: parseInt(size, 10)
+                        });
+                    }
+                });
+
+                // Ordina per data decrescente (le più recenti in cima)
+                items.sort((a, b) => b.lastModified - a.lastModified);
+
+                allVideos = items.map(item => parseVideoItem(item));
                 renderVideos(allVideos);
+
             } catch (err) {
-                console.error("Errore fetch Drive:", err);
-                errorBox.textContent = `Impossibile caricare i video: ${err.message}`;
+                console.error("Errore recupero video R2:", err);
+                errorBox.textContent = `Errore di connessione a Cloudflare R2: ${err.message}`;
                 errorBox.classList.remove('hidden');
-                countLabel.textContent = "Errore di connessione";
+                countLabel.textContent = "Errore di caricamento";
             } finally {
                 loader.classList.add('hidden');
                 refreshIcon.classList.remove('animate-spin');
             }
         }
 
-        function parseVideoItem(file) {
-            const cleanName = file.name.replace(/\.[^/.]+$/, "");
+        function parseVideoItem(item) {
+            const rawFileName = item.key;
+            const cleanName = rawFileName.replace(/\.[^/.]+$/, "");
             let teamA = "", teamB = "", matchLabel = "", phase = "Partita";
 
             if (cleanName.includes(" vs ")) {
@@ -184,18 +201,17 @@
                 teamA = cleanName;
             }
 
+            const directUrl = `${R2_PUBLIC_URL}/${encodeURIComponent(rawFileName)}`;
+
             return {
-                id: file.id,
                 rawName: cleanName,
+                fileName: rawFileName,
                 teamA,
                 teamB,
                 matchLabel,
                 phase,
-                createdTime: file.createdTime,
-                // Flusso binario API per il player HTML5 interno
-                streamUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`,
-                // Link pagina file Drive: permette il download pulito e "Salva video" su rullino iOS
-                driveViewUrl: `https://drive.google.com/file/d/${file.id}/view`
+                createdTime: item.lastModified,
+                url: directUrl
             };
         }
 
@@ -243,14 +259,13 @@
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button 
-                            onclick="openPlayer('${v.streamUrl}', '${v.rawName.replace(/'/g, "\\'")}', '${v.driveViewUrl}')" 
+                            onclick="openPlayer('${v.url}', '${v.rawName.replace(/'/g, "\\'")}', '${v.fileName}')" 
                             class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
                             ▶ GUARDA
                         </button>
                         <a 
-                            href="${v.driveViewUrl}" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
+                            href="${v.url}" 
+                            download="${v.fileName}"
                             class="w-full bg-[#20232c] hover:bg-gray-700 active:scale-95 text-gray-200 font-bold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center cursor-pointer">
                             ⬇ SCARICA
                         </a>
@@ -284,20 +299,21 @@
             input.focus();
         }
 
-        function openPlayer(streamUrl, title, driveViewUrl) {
+        function openPlayer(videoUrl, title, fileName) {
             const overlay = document.getElementById('playerOverlay');
             const video = document.getElementById('nativeVideo');
             const titleEl = document.getElementById('playerTitle');
             const downloadBtn = document.getElementById('playerDownloadBtn');
 
             titleEl.textContent = title;
-            downloadBtn.href = driveViewUrl;
+            downloadBtn.href = videoUrl;
+            downloadBtn.setAttribute('download', fileName);
 
-            video.src = streamUrl;
+            video.src = videoUrl;
             overlay.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            video.play().catch(e => console.log("Riproduzione manuale richiesta"));
+            video.play().catch(e => console.log("Riproduzione interrotta o richiesta manuale"));
         }
 
         function closePlayer() {
