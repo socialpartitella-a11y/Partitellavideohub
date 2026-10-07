@@ -20,9 +20,9 @@
 </head>
 <body class="bg-[#0b0c10] text-gray-100 min-h-screen flex flex-col font-sans selection:bg-orange-500 selection:text-white">
 
-    <!-- Header con Logo Partitella Live -->
+    <!-- Header con Logo Partitella Live (Aggiornato) -->
     <header class="w-full bg-[#121318] border-b border-gray-800/80 py-3 px-4 flex flex-col items-center justify-center sticky top-0 z-30 shadow-md">
-        <img src="partitella live copia.png" alt="Partitella Live" class="h-14 sm:h-16 w-auto object-contain drop-shadow">
+        <img src="partitella%20live%20copia.png" alt="Partitella Live" class="h-14 sm:h-16 w-auto object-contain drop-shadow">
     </header>
 
     <main class="max-w-3xl mx-auto px-4 py-5 flex-grow w-full">
@@ -164,7 +164,7 @@
         function parseVideoItem(item) {
             const rawFileName = item.filename;
             const cleanName = item.title;
-            let teamA = "", teamB = "", matchLabel = "", phase = "Partita";
+            let teamA = "", teamB = "", matchLabel = "", phase = "Partite";
 
             if (cleanName.includes(" vs ")) {
                 const parts = cleanName.split(" vs ");
@@ -174,7 +174,7 @@
                 const subParts = rest.split(" - ");
                 teamB = (subParts[0] || "").trim().replace(/^"|"$/g, '');
                 matchLabel = (subParts[1] || "").trim();
-                phase = (subParts[2] || "").trim() || "Campionato";
+                phase = (subParts[2] || "").trim() || "Partite";
             } else {
                 teamA = cleanName;
             }
@@ -185,7 +185,7 @@
                 teamA,
                 teamB,
                 matchLabel,
-                phase,
+                phase: item.phase || phase,
                 url: item.url
             };
         }
@@ -216,7 +216,7 @@
                 card.innerHTML = `
                     <div class="flex items-center justify-between gap-2">
                         <span class="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md ${badgeColor}">
-                            ${v.phase || 'MATCH'} ${v.matchLabel ? '• ' + v.matchLabel : ''}
+                            ${v.phase || 'PARTITE'} ${v.matchLabel ? '• ' + v.matchLabel : ''}
                         </span>
                     </div>
 
