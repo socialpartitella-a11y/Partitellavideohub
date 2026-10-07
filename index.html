@@ -67,11 +67,11 @@
         </div>
     </main>
 
-    <!-- Modal Video Player Ottimizzato Mobile -->
-    <div id="videoModal" class="hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-3 sm:p-6 backdrop-blur-md">
+    <!-- Modal Video Player: schermo completo senza tagli -->
+    <div id="videoModal" class="hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-3 sm:p-6 backdrop-blur-md cursor-pointer select-none">
         
-        <!-- Barra Superiore con Titolo e Tasto X -->
-        <div class="w-full max-w-3xl flex justify-between items-center mb-3 px-1 relative z-[10000]">
+        <!-- Header del Modale (stopPropagation per evitare conflitti di click) -->
+        <div class="w-full max-w-3xl flex justify-between items-center mb-3 px-1 relative z-[10000] cursor-default" onclick="event.stopPropagation()">
             <span id="modalTitle" class="text-sm font-bold text-gray-200 truncate pr-4 drop-shadow"></span>
             
             <button 
@@ -82,20 +82,21 @@
             </button>
         </div>
         
-        <!-- Maschera Player (nasconde la barra superiore di Drive) -->
-        <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative">
+        <!-- Contenitore Video Integrale (nessun ritaglio o margine negativo) -->
+        <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative cursor-default" onclick="event.stopPropagation()">
             <iframe 
                 id="modalIframe" 
-                class="w-full h-[calc(100%+56px)] -mt-[56px] border-0" 
+                class="w-full h-full border-0 block" 
                 allow="autoplay; fullscreen" 
                 allowfullscreen>
             </iframe>
         </div>
 
-        <!-- Tasto Chiudi sotto il video -->
+        <!-- Tasto di Chiusura Rapido inferiore -->
         <button 
             type="button" 
             id="btnBottomClose"
+            onclick="event.stopPropagation()"
             class="mt-4 px-6 py-2.5 bg-gray-900 border border-gray-700 active:bg-gray-800 text-gray-300 rounded-xl text-xs font-bold tracking-wider uppercase cursor-pointer">
             Chiudi Anteprima
         </button>
@@ -122,7 +123,6 @@
             refreshIcon.classList.add('inline-block', 'animate-spin');
             errorBox.classList.add('hidden');
 
-            // Query robusta: prende tutti i file video o con estensione video dentro la cartella
             const query = `'${FOLDER_ID}' in parents and trashed = false`;
             const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&orderBy=createdTime desc&fields=files(id,name,mimeType,createdTime,size)&key=${API_KEY}`;
 
@@ -134,7 +134,6 @@
                 }
                 const data = await res.json();
                 
-                // Filtra solo i file che sono video o finiscono con .mp4/.mov
                 const files = (data.files || []).filter(f => 
                     (f.mimeType && f.mimeType.startsWith('video/')) || 
                     /\.(mp4|mov|mkv|webm)$/i.test(f.name)
@@ -290,14 +289,25 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Tasto X in alto
             document.getElementById('btnCloseModal').addEventListener('click', (e) => {
                 e.stopPropagation();
                 closeModal();
             });
 
+            // Tasto inferiore
             document.getElementById('btnBottomClose').addEventListener('click', (e) => {
                 e.stopPropagation();
                 closeModal();
+            });
+
+            // Click/Tap fuori dal riquadro video (sullo sfondo nero):
+            // sposta il focus fuori dall'iframe togliendo i controlli dallo schermo
+            document.getElementById('videoModal').addEventListener('click', () => {
+                window.focus();
+                if (document.activeElement) {
+                    document.activeElement.blur();
+                }
             });
 
             document.addEventListener('keydown', (e) => {
