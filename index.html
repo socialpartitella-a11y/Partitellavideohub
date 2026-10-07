@@ -2,12 +2,19 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Partitella TV - Archivio Live</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .smooth-scroll {
             -webkit-overflow-scrolling: touch;
+        }
+        /* Gestione area sicura inferiore iPhone (Home Bar) */
+        .safe-bottom {
+            padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
+        }
+        .safe-top {
+            padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
         }
     </style>
 </head>
@@ -67,20 +74,23 @@
         </div>
     </main>
 
-    <!-- Overlay Video Player Nativo Partitella (con tasto Torna Indietro garantito) -->
+    <!-- Overlay Video Player Nativo Partitella -->
     <div id="playerOverlay" class="hidden fixed inset-0 z-50 bg-black flex flex-col justify-between">
         
-        <!-- Barra Superiore con tasto Torna Indietro ben visibile -->
-        <div class="w-full bg-[#121318]/90 backdrop-blur border-b border-gray-800 px-4 py-3 flex items-center justify-between z-10">
+        <!-- Barra Superiore con Titolo Centrato e X fissa a destra -->
+        <div class="w-full bg-[#121318]/95 backdrop-blur border-b border-gray-800 px-4 py-3 safe-top flex items-center relative z-10">
+            <!-- Spazio fittizio a sinistra per bilanciare la X -->
+            <div class="w-9 h-9 flex-shrink-0"></div>
+
+            <!-- Titolo Centrato -->
+            <div class="flex-grow text-center px-2 min-w-0">
+                <span id="playerTitle" class="text-xs sm:text-sm font-bold text-gray-200 truncate block"></span>
+            </div>
+
+            <!-- Tasto X a destra -->
             <button 
                 onclick="closePlayer()" 
-                class="flex items-center gap-2 bg-gray-800 active:bg-gray-700 text-white text-xs font-bold px-3 py-2 rounded-xl border border-gray-700 cursor-pointer">
-                <span>←</span> Torna all'elenco
-            </button>
-            <span id="playerTitle" class="text-xs sm:text-sm font-bold text-gray-300 truncate max-w-[200px] sm:max-w-md px-2"></span>
-            <button 
-                onclick="closePlayer()" 
-                class="w-8 h-8 rounded-full bg-gray-800 active:bg-gray-700 flex items-center justify-center text-gray-300 font-bold text-sm cursor-pointer">
+                class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 flex items-center justify-center text-gray-200 font-bold text-base cursor-pointer border border-gray-700 flex-shrink-0">
                 ✕
             </button>
         </div>
@@ -89,7 +99,7 @@
         <div class="flex-grow flex items-center justify-center p-2 sm:p-4 bg-black">
             <video 
                 id="nativeVideo" 
-                class="w-full max-h-[80vh] max-w-4xl rounded-xl object-contain bg-black shadow-2xl" 
+                class="w-full max-h-[75vh] max-w-4xl rounded-xl object-contain bg-black shadow-2xl" 
                 controls 
                 playsinline 
                 preload="auto">
@@ -97,13 +107,13 @@
             </video>
         </div>
 
-        <!-- Barra Inferiore con Tasto Scarica Diretto -->
-        <div class="w-full bg-[#121318]/90 border-t border-gray-800 p-3 flex justify-center">
+        <!-- Barra Inferiore con Tasto Scarica rialzato per iOS -->
+        <div class="w-full bg-[#121318]/95 border-t border-gray-800 px-4 pt-3 safe-bottom flex justify-center">
             <a 
                 id="playerDownloadBtn" 
                 href="#" 
                 target="_blank" 
-                class="bg-orange-500 active:bg-orange-600 text-black font-black text-xs py-2.5 px-6 rounded-xl transition flex items-center gap-2">
+                class="w-full sm:w-auto max-w-xs bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 text-center shadow-lg">
                 ⬇ SCARICA QUESTA PARTITA
             </a>
         </div>
@@ -184,7 +194,6 @@
                 matchLabel,
                 phase,
                 createdTime: file.createdTime,
-                // Flusso binario diretto: usato sia per il player HTML5 nativo che per il download
                 streamUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`
             };
         }
@@ -275,7 +284,6 @@
             input.focus();
         }
 
-        // GESTIONE PLAYER INTERNO CON TASTO INDIETRO GARANTITO
         function openPlayer(streamUrl, title) {
             const overlay = document.getElementById('playerOverlay');
             const video = document.getElementById('nativeVideo');
@@ -290,8 +298,7 @@
             overlay.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            // Avvia la riproduzione
-            video.play().catch(e => console.log("Avvio manuale richiesto"));
+            video.play().catch(e => console.log("Riproduzione interrotta o richiesta manuale"));
         }
 
         function closePlayer() {
@@ -299,14 +306,13 @@
             const video = document.getElementById('nativeVideo');
 
             video.pause();
-            video.removeAttribute('src'); // interrompe subito il download dello stream
+            video.removeAttribute('src');
             video.load();
 
             overlay.classList.add('hidden');
             document.body.style.overflow = '';
         }
 
-        // Tasto Escape da tastiera
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closePlayer();
         });
