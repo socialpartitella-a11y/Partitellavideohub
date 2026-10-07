@@ -121,8 +121,8 @@
     </footer>
 
     <script>
-        // ENDPOINT PUBBLICO CLOUDFLARE R2 (Nessun token privato necessario nel frontend)
-        const R2_PUBLIC_URL = 'https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev';
+        // ENDPOINT PUBBLICO INDICE JSON CLOUDFLARE R2
+        const CATALOG_URL = 'https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/lista_video.json';
 
         let allVideos = [];
 
@@ -138,42 +138,25 @@
             errorBox.classList.add('hidden');
 
             try {
-                // Interroga il bucket pubblico R2 per ottenere l'elenco dei file
-                const res = await fetch(R2_PUBLIC_URL);
+                // Richiede l'indice JSON con timestamp cache-busting per smartphone
+                const res = await fetch(`${CATALOG_URL}?t=${Date.now()}`);
+                
                 if (!res.ok) {
-                    throw new Error(`Impossibile raggiungere il bucket (${res.status})`);
+                    if (res.status === 404) {
+                        allVideos = [];
+                        renderVideos([]);
+                        return;
+                    }
+                    throw new Error(`Stato HTTP ${res.status}`);
                 }
 
-                const xmlText = await res.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-
-                const contents = xmlDoc.querySelectorAll("Contents");
-                const items = [];
-
-                contents.forEach(node => {
-                    const key = node.querySelector("Key")?.textContent || "";
-                    const lastModified = node.querySelector("LastModified")?.textContent || "";
-                    const size = node.querySelector("Size")?.textContent || "0";
-
-                    if (/\.(mp4|mov|mkv|webm)$/i.test(key)) {
-                        items.push({
-                            key,
-                            lastModified: new Date(lastModified),
-                            size: parseInt(size, 10)
-                        });
-                    }
-                });
-
-                // Ordina per data decrescente
-                items.sort((a, b) => b.lastModified - a.lastModified);
-
-                allVideos = items.map(item => parseVideoItem(item));
+                const list = await res.json();
+                allVideos = list.map(item => parseVideoItem(item));
                 renderVideos(allVideos);
 
             } catch (err) {
-                console.error("Errore recupero video R2:", err);
-                errorBox.textContent = `Errore di connessione a Cloudflare R2: ${err.message}`;
+                console.error("Errore recupero video:", err);
+                errorBox.textContent = `Errore di connessione al catalogo: ${err.message}`;
                 errorBox.classList.remove('hidden');
                 countLabel.textContent = "Errore di caricamento";
             } finally {
@@ -183,8 +166,8 @@
         }
 
         function parseVideoItem(item) {
-            const rawFileName = item.key;
-            const cleanName = rawFileName.replace(/\.[^/.]+$/, "");
+            const rawFileName = item.filename;
+            const cleanName = item.title;
             let teamA = "", teamB = "", matchLabel = "", phase = "Partita";
 
             if (cleanName.includes(" vs ")) {
@@ -200,8 +183,6 @@
                 teamA = cleanName;
             }
 
-            const directUrl = `${R2_PUBLIC_URL}/${encodeURIComponent(rawFileName)}`;
-
             return {
                 rawName: cleanName,
                 fileName: rawFileName,
@@ -209,8 +190,7 @@
                 teamB,
                 matchLabel,
                 phase,
-                createdTime: item.lastModified,
-                url: directUrl
+                url: item.url
             };
         }
 
