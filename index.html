@@ -67,11 +67,14 @@
         </div>
     </main>
 
-    <!-- Modal Video Player: schermo completo senza tagli -->
-    <div id="videoModal" class="hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-3 sm:p-6 backdrop-blur-md cursor-pointer select-none">
+    <!-- Modal Video Player Standard -->
+    <div id="videoModal" class="hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-3 sm:p-6 backdrop-blur-md">
         
-        <!-- Header del Modale (stopPropagation per evitare conflitti di click) -->
-        <div class="w-full max-w-3xl flex justify-between items-center mb-3 px-1 relative z-[10000] cursor-default" onclick="event.stopPropagation()">
+        <!-- Elemento invisibile per catturare fisicamente il focus fuori dall'iframe -->
+        <button id="focusStealer" class="opacity-0 absolute -top-10 left-0 h-0 w-0 pointer-events-none" tabindex="-1"></button>
+
+        <!-- Header del Modale -->
+        <div class="w-full max-w-3xl flex justify-between items-center mb-3 px-1 relative z-[10000]">
             <span id="modalTitle" class="text-sm font-bold text-gray-200 truncate pr-4 drop-shadow"></span>
             
             <button 
@@ -82,8 +85,8 @@
             </button>
         </div>
         
-        <!-- Contenitore Video Integrale (nessun ritaglio o margine negativo) -->
-        <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative cursor-default" onclick="event.stopPropagation()">
+        <!-- Box Video Nativo 16:9 senza ritagli -->
+        <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative">
             <iframe 
                 id="modalIframe" 
                 class="w-full h-full border-0 block" 
@@ -92,11 +95,10 @@
             </iframe>
         </div>
 
-        <!-- Tasto di Chiusura Rapido inferiore -->
+        <!-- Tasto di Chiusura Inferiore -->
         <button 
             type="button" 
             id="btnBottomClose"
-            onclick="event.stopPropagation()"
             class="mt-4 px-6 py-2.5 bg-gray-900 border border-gray-700 active:bg-gray-800 text-gray-300 rounded-xl text-xs font-bold tracking-wider uppercase cursor-pointer">
             Chiudi Anteprima
         </button>
@@ -273,7 +275,9 @@
             const titleEl = document.getElementById('modalTitle');
 
             titleEl.textContent = title;
-            iframe.src = `https://drive.google.com/file/d/${id}/preview`;
+            // Parametro autoplay per avvio immediato
+            iframe.src = `https://drive.google.com/file/d/${id}/preview?autoplay=1`;
+            iframe.style.pointerEvents = 'auto';
             
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -289,24 +293,31 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Tasto X in alto
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('modalIframe');
+            const focusStealer = document.getElementById('focusStealer');
+
             document.getElementById('btnCloseModal').addEventListener('click', (e) => {
                 e.stopPropagation();
                 closeModal();
             });
 
-            // Tasto inferiore
             document.getElementById('btnBottomClose').addEventListener('click', (e) => {
                 e.stopPropagation();
                 closeModal();
             });
 
-            // Click/Tap fuori dal riquadro video (sullo sfondo nero):
-            // sposta il focus fuori dall'iframe togliendo i controlli dallo schermo
-            document.getElementById('videoModal').addEventListener('click', () => {
-                window.focus();
-                if (document.activeElement) {
-                    document.activeElement.blur();
+            // Click/Tap sullo sfondo nero:
+            // 1. Sposta forzatamente il focus attivo del browser fuori dall'iframe
+            // 2. Disabilita temporaneamente pointer-events sull'iframe per 150ms
+            // Questo fa perdere a Drive qualsiasi interazione touch/hover, dissolvendo i controlli opachi
+            modal.addEventListener('pointerdown', (e) => {
+                if (e.target === modal) {
+                    focusStealer.focus();
+                    iframe.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        iframe.style.pointerEvents = 'auto';
+                    }, 150);
                 }
             });
 
