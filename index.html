@@ -121,7 +121,7 @@
     </footer>
 
     <script>
-        // CONFIGURAZIONE CLOUDFLARE R2
+        // ENDPOINT PUBBLICO CLOUDFLARE R2 (Nessun token privato necessario nel frontend)
         const R2_PUBLIC_URL = 'https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev';
 
         let allVideos = [];
@@ -138,7 +138,7 @@
             errorBox.classList.add('hidden');
 
             try {
-                // Interroga il bucket pubblico R2 per ottenere la lista degli oggetti (formato S3 XML)
+                // Interroga il bucket pubblico R2 per ottenere l'elenco dei file
                 const res = await fetch(R2_PUBLIC_URL);
                 if (!res.ok) {
                     throw new Error(`Impossibile raggiungere il bucket (${res.status})`);
@@ -156,7 +156,6 @@
                     const lastModified = node.querySelector("LastModified")?.textContent || "";
                     const size = node.querySelector("Size")?.textContent || "0";
 
-                    // Considera solo file video
                     if (/\.(mp4|mov|mkv|webm)$/i.test(key)) {
                         items.push({
                             key,
@@ -166,7 +165,7 @@
                     }
                 });
 
-                // Ordina per data decrescente (le più recenti in cima)
+                // Ordina per data decrescente
                 items.sort((a, b) => b.lastModified - a.lastModified);
 
                 allVideos = items.map(item => parseVideoItem(item));
@@ -259,7 +258,7 @@
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button 
-                            onclick="openPlayer('${v.url}', '${v.rawName.replace(/'/g, "\\'")}', '${v.fileName}')" 
+                            onclick="openPlayer('${v.url}', '${v.rawName.replace(/'/g, "\\'")}', '${v.fileName.replace(/'/g, "\\'")}')" 
                             class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
                             ▶ GUARDA
                         </button>
