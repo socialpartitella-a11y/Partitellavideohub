@@ -13,7 +13,7 @@
 </head>
 <body class="bg-[#0b0c10] text-gray-100 min-h-screen flex flex-col font-sans selection:bg-orange-500 selection:text-white">
 
-    <!-- Header con Logo Partitella Live -->
+    <!-- Header con Logo Partitella Live (ottimizzato mobile) -->
     <header class="w-full bg-[#121318] border-b border-gray-800/80 py-3 px-4 flex flex-col items-center justify-center sticky top-0 z-30 shadow-md">
         <img src="partitella live.png" alt="Partitella Live" class="h-14 sm:h-16 w-auto object-contain drop-shadow">
     </header>
@@ -60,49 +60,12 @@
         <!-- Lista Card Partite -->
         <div id="videosGrid" class="space-y-3"></div>
 
-        <!-- Empty State -->
+        <!-- Empty State (nessun risultato) -->
         <div id="noResults" class="hidden text-center py-16 text-gray-500 space-y-2">
             <p class="text-3xl">⚽</p>
             <p class="text-sm">Nessuna partita trovata.</p>
         </div>
     </main>
-
-    <!-- Modal Video Player Standard -->
-    <div id="videoModal" class="hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-3 sm:p-6 backdrop-blur-md">
-        
-        <!-- Elemento invisibile per catturare fisicamente il focus fuori dall'iframe -->
-        <button id="focusStealer" class="opacity-0 absolute -top-10 left-0 h-0 w-0 pointer-events-none" tabindex="-1"></button>
-
-        <!-- Header del Modale -->
-        <div class="w-full max-w-3xl flex justify-between items-center mb-3 px-1 relative z-[10000]">
-            <span id="modalTitle" class="text-sm font-bold text-gray-200 truncate pr-4 drop-shadow"></span>
-            
-            <button 
-                type="button" 
-                id="btnCloseModal"
-                class="bg-gray-800 hover:bg-gray-700 active:scale-90 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-black border border-gray-600 shadow-xl cursor-pointer">
-                ✕
-            </button>
-        </div>
-        
-        <!-- Box Video Nativo 16:9 senza ritagli -->
-        <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative">
-            <iframe 
-                id="modalIframe" 
-                class="w-full h-full border-0 block" 
-                allow="autoplay; fullscreen" 
-                allowfullscreen>
-            </iframe>
-        </div>
-
-        <!-- Tasto di Chiusura Inferiore -->
-        <button 
-            type="button" 
-            id="btnBottomClose"
-            class="mt-4 px-6 py-2.5 bg-gray-900 border border-gray-700 active:bg-gray-800 text-gray-300 rounded-xl text-xs font-bold tracking-wider uppercase cursor-pointer">
-            Chiudi Anteprima
-        </button>
-    </div>
 
     <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-900 bg-[#0d0e12]">
         Partitella Hub — Powered by Sbrus
@@ -179,8 +142,10 @@
                 matchLabel,
                 phase,
                 createdTime: file.createdTime,
-                previewUrl: `https://drive.google.com/file/d/${file.id}/preview`,
-                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
+                // Riproduzione nativa senza barre o iframe bloccanti
+                watchUrl: `https://drive.google.com/file/d/${file.id}/view`,
+                // Endpoint binario diretto via API: scarica subito l'MP4 senza avviso virus di Google
+                downloadUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`
             };
         }
 
@@ -227,16 +192,19 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button 
-                            onclick="openModal('${v.id}', '${v.rawName.replace(/'/g, "\\'")}')" 
-                            class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
-                            ▶ GUARDA
-                        </button>
                         <a 
-                            href="${v.downloadUrl}" 
+                            href="${v.watchUrl}" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            class="w-full bg-[#20232c] hover:bg-gray-700 active:scale-95 text-gray-200 font-bold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center">
+                            class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center cursor-pointer">
+                            ▶ GUARDA
+                        </a>
+                        <a 
+                            href="${v.downloadUrl}" 
+                            download="${v.rawName}.mp4"
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            class="w-full bg-[#20232c] hover:bg-gray-700 active:scale-95 text-gray-200 font-bold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center cursor-pointer">
                             ⬇ SCARICA
                         </a>
                     </div>
@@ -269,64 +237,7 @@
             input.focus();
         }
 
-        function openModal(id, title) {
-            const modal = document.getElementById('videoModal');
-            const iframe = document.getElementById('modalIframe');
-            const titleEl = document.getElementById('modalTitle');
-
-            titleEl.textContent = title;
-            // Parametro autoplay per avvio immediato
-            iframe.src = `https://drive.google.com/file/d/${id}/preview?autoplay=1`;
-            iframe.style.pointerEvents = 'auto';
-            
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('videoModal');
-            const iframe = document.getElementById('modalIframe');
-
-            iframe.src = 'about:blank';
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('videoModal');
-            const iframe = document.getElementById('modalIframe');
-            const focusStealer = document.getElementById('focusStealer');
-
-            document.getElementById('btnCloseModal').addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeModal();
-            });
-
-            document.getElementById('btnBottomClose').addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeModal();
-            });
-
-            // Click/Tap sullo sfondo nero:
-            // 1. Sposta forzatamente il focus attivo del browser fuori dall'iframe
-            // 2. Disabilita temporaneamente pointer-events sull'iframe per 150ms
-            // Questo fa perdere a Drive qualsiasi interazione touch/hover, dissolvendo i controlli opachi
-            modal.addEventListener('pointerdown', (e) => {
-                if (e.target === modal) {
-                    focusStealer.focus();
-                    iframe.style.pointerEvents = 'none';
-                    setTimeout(() => {
-                        iframe.style.pointerEvents = 'auto';
-                    }, 150);
-                }
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeModal();
-            });
-
-            fetchVideos();
-        });
+        document.addEventListener('DOMContentLoaded', fetchVideos);
     </script>
 </body>
 </html>
