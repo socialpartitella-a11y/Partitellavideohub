@@ -6,6 +6,7 @@
     <title>Partitella TV - Archivio Live</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Touch scroll fluido su iOS */
         .smooth-scroll {
             -webkit-overflow-scrolling: touch;
         }
@@ -13,7 +14,7 @@
 </head>
 <body class="bg-[#0b0c10] text-gray-100 min-h-screen flex flex-col font-sans selection:bg-orange-500 selection:text-white">
 
-    <!-- Header con Logo Partitella Live -->
+    <!-- Header con Logo Partitella Live (ottimizzato mobile) -->
     <header class="w-full bg-[#121318] border-b border-gray-800/80 py-3 px-4 flex flex-col items-center justify-center sticky top-0 z-30 shadow-md">
         <img src="partitella live.png" alt="Partitella Live" class="h-14 sm:h-16 w-auto object-contain drop-shadow">
     </header>
@@ -33,7 +34,7 @@
                 <button 
                     id="clearSearch" 
                     onclick="clearSearchInput()" 
-                    class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1 text-sm cursor-pointer">
+                    class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1 text-sm">
                     ✕
                 </button>
             </div>
@@ -60,52 +61,73 @@
         <!-- Lista Card Partite -->
         <div id="videosGrid" class="space-y-3"></div>
 
-        <!-- Empty State -->
+        <!-- Empty State (nessun risultato trovato) -->
         <div id="noResults" class="hidden text-center py-16 text-gray-500 space-y-2">
             <p class="text-3xl">⚽</p>
-            <p class="text-sm">Nessuna partita trovata.</p>
+            <p class="text-sm">Nessuna partita trovata con questo nome.</p>
         </div>
     </main>
 
-    <!-- Modal Video Player Ottimizzato Mobile -->
-    <div id="videoModal" class="hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-3 sm:p-6 backdrop-blur-md">
+ <!-- Modal Video Player Ottimizzato Mobile -->
+<div id="videoModal" class="hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-3 sm:p-6 backdrop-blur-md">
+    
+    <!-- Barra Superiore con Titolo e Tasto X fisso in primo piano -->
+    <div class="w-full max-w-3xl flex justify-between items-center mb-3 px-1 relative z-[10000]">
+        <span id="modalTitle" class="text-sm font-bold text-gray-200 truncate pr-4 drop-shadow"></span>
         
-        <!-- Barra Superiore con Titolo e Tasto X -->
-        <div class="w-full max-w-3xl flex justify-between items-center mb-3 px-1 relative z-[10000]">
-            <span id="modalTitle" class="text-sm font-bold text-gray-200 truncate pr-4 drop-shadow"></span>
-            
-            <button 
-                type="button" 
-                id="btnCloseModal"
-                class="bg-gray-800 hover:bg-gray-700 active:scale-90 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-black border border-gray-600 shadow-xl cursor-pointer">
-                ✕
-            </button>
-        </div>
-        
-        <!-- Maschera Player (nasconde la barra superiore di Drive) -->
-        <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative">
-            <iframe 
-                id="modalIframe" 
-                class="w-full h-[calc(100%+56px)] -mt-[56px] border-0" 
-                allow="autoplay; fullscreen" 
-                allowfullscreen>
-            </iframe>
-        </div>
-
-        <!-- Tasto Chiudi sotto il video -->
+        <!-- Tasto X dedicato alla chiusura -->
         <button 
             type="button" 
-            id="btnBottomClose"
-            class="mt-4 px-6 py-2.5 bg-gray-900 border border-gray-700 active:bg-gray-800 text-gray-300 rounded-xl text-xs font-bold tracking-wider uppercase cursor-pointer">
-            Chiudi Anteprima
+            id="btnCloseModal"
+            class="bg-gray-800 hover:bg-gray-700 active:scale-90 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-black border border-gray-600 shadow-xl cursor-pointer">
+            ✕
         </button>
     </div>
+    
+    <!-- Contenitore Maschera (nasconde la barra superiore e l'icona pop-out di Drive) -->
+    <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative">
+        <iframe 
+            id="modalIframe" 
+            class="w-full h-[calc(100%+56px)] -mt-[56px] border-0" 
+            allow="autoplay; fullscreen" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- Tasto Chiudi comodo sotto il video -->
+    <button 
+        type="button" 
+        id="btnBottomClose"
+        class="mt-4 px-6 py-2.5 bg-gray-900 border border-gray-700 active:bg-gray-800 text-gray-300 rounded-xl text-xs font-bold tracking-wider uppercase cursor-pointer">
+        Chiudi Anteprima
+    </button>
+</div>
+    
+    <!-- Player Frame -->
+    <div class="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl relative">
+        <iframe 
+            id="modalIframe" 
+            class="w-full h-full border-0" 
+            allow="autoplay; fullscreen" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- Tasto di Chiusura Rapido sotto al video (comodo da mobile con una sola mano) -->
+    <button 
+        type="button"
+        id="btnBottomClose"
+        class="mt-4 px-6 py-2.5 bg-gray-900 border border-gray-700 text-gray-300 active:bg-gray-800 rounded-xl text-xs font-bold tracking-wider uppercase">
+        Chiudi Anteprima
+    </button>
+</div>
 
     <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-900 bg-[#0d0e12]">
         Partitella Hub — Powered by Sbrus
     </footer>
 
     <script>
+        // CONFIGURAZIONE DRIVE API
         const API_KEY = 'AIzaSyAWqT48D2fiOxr3G7Cxlc1es4hR9sfHBZw';
         const FOLDER_ID = '1T5D0PWCoP_0adphvPgZUMLuFkkQPDcuO';
 
@@ -118,45 +140,38 @@
             const refreshIcon = document.getElementById('refreshIcon');
             const countLabel = document.getElementById('videoCount');
 
-            loader.classList.remove('hidden');
             refreshIcon.classList.add('inline-block', 'animate-spin');
             errorBox.classList.add('hidden');
 
-            // Query robusta: prende tutti i file video o con estensione video dentro la cartella
-            const query = `'${FOLDER_ID}' in parents and trashed = false`;
-            const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&orderBy=createdTime desc&fields=files(id,name,mimeType,createdTime,size)&key=${API_KEY}`;
+            const query = `'${FOLDER_ID}' in parents and trashed = false and mimeType contains 'video/'`;
+            const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&orderBy=createdTime desc&fields=files(id,name,createdTime,size,thumbnailLink)&key=${API_KEY}`;
 
             try {
                 const res = await fetch(url);
                 if (!res.ok) {
                     const errData = await res.json();
-                    throw new Error(errData.error?.message || `Errore HTTP ${res.status}`);
+                    throw new Error(errData.error?.message || 'Errore nel caricamento dei file');
                 }
                 const data = await res.json();
+                allVideos = (data.files || []).map(file => parseVideoItem(file));
                 
-                // Filtra solo i file che sono video o finiscono con .mp4/.mov
-                const files = (data.files || []).filter(f => 
-                    (f.mimeType && f.mimeType.startsWith('video/')) || 
-                    /\.(mp4|mov|mkv|webm)$/i.test(f.name)
-                );
-
-                allVideos = files.map(file => parseVideoItem(file));
                 renderVideos(allVideos);
             } catch (err) {
-                console.error("Errore fetch Drive:", err);
+                console.error(err);
                 errorBox.textContent = `Impossibile caricare i video: ${err.message}`;
                 errorBox.classList.remove('hidden');
-                countLabel.textContent = "Errore di connessione";
             } finally {
                 loader.classList.add('hidden');
                 refreshIcon.classList.remove('animate-spin');
             }
         }
 
+        // Estrae Nomi Squadre, Fase e Dati dal formato file Partitella
         function parseVideoItem(file) {
-            const cleanName = file.name.replace(/\.[^/.]+$/, "");
+            const cleanName = file.name.replace(/\.[^/.]+$/, ""); // toglie .mp4
             let teamA = "", teamB = "", matchLabel = "", phase = "Partita";
 
+            // Supporta "Team A" vs "Team B" - Match N. - Fase
             if (cleanName.includes(" vs ")) {
                 const parts = cleanName.split(" vs ");
                 teamA = parts[0].trim().replace(/^"|"$/g, '');
@@ -201,6 +216,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-[#14161d] border border-gray-800/90 rounded-2xl p-4 shadow-lg hover:border-gray-700 transition flex flex-col justify-between gap-3";
 
+                // Badge della fase (Semifinale/Finale evidenziate)
                 const isKnockout = /finale/i.test(v.phase);
                 const badgeColor = isKnockout 
                     ? "bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black" 
@@ -244,6 +260,7 @@
             });
         }
 
+        // Ricerca istantanea
         function filterVideos() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const clearBtn = document.getElementById('clearSearch');
@@ -268,44 +285,56 @@
             input.focus();
         }
 
-        function openModal(id, title) {
-            const modal = document.getElementById('videoModal');
-            const iframe = document.getElementById('modalIframe');
-            const titleEl = document.getElementById('modalTitle');
+// GESTIONE MODAL CON FOCUS ESTERNO PER I CONTROLLI
+function openModal(id, title) {
+    const modal = document.getElementById('videoModal');
+    const iframe = document.getElementById('modalIframe');
+    const titleEl = document.getElementById('modalTitle');
 
-            titleEl.textContent = title;
-            iframe.src = `https://drive.google.com/file/d/${id}/preview`;
-            
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+    titleEl.textContent = title;
+    iframe.src = `https://drive.google.com/file/d/${id}/preview`;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
 
-        function closeModal() {
-            const modal = document.getElementById('videoModal');
-            const iframe = document.getElementById('modalIframe');
+function closeModal() {
+    const modal = document.getElementById('videoModal');
+    const iframe = document.getElementById('modalIframe');
 
-            iframe.src = 'about:blank';
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
+    iframe.src = 'about:blank'; // stop immediato audio e streaming
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('btnCloseModal').addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeModal();
-            });
+document.addEventListener('DOMContentLoaded', () => {
+    // Tasto X in alto
+    document.getElementById('btnCloseModal').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeModal();
+    });
 
-            document.getElementById('btnBottomClose').addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeModal();
-            });
+    // Tasto "Chiudi Anteprima" in basso
+    document.getElementById('btnBottomClose').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeModal();
+    });
 
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeModal();
-            });
+    // Chiudi con tasto Esc da tastiera
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
 
-            fetchVideos();
-        });
+    // Avvio caricamento video
+    fetchVideos();
+});
+
+    // Avvio caricamento video
+    fetchVideos();
+});
+
+        // Avvio automatico al caricamento
+        window.addEventListener('DOMContentLoaded', fetchVideos);
     </script>
 </body>
 </html>
