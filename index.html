@@ -79,15 +79,12 @@
         
         <!-- Barra Superiore con Titolo Centrato e X fissa a destra -->
         <div class="w-full bg-[#121318]/95 backdrop-blur border-b border-gray-800 px-4 py-3 safe-top flex items-center relative z-10">
-            <!-- Spazio fittizio a sinistra per bilanciare la X -->
             <div class="w-9 h-9 flex-shrink-0"></div>
 
-            <!-- Titolo Centrato -->
             <div class="flex-grow text-center px-2 min-w-0">
                 <span id="playerTitle" class="text-xs sm:text-sm font-bold text-gray-200 truncate block"></span>
             </div>
 
-            <!-- Tasto X a destra -->
             <button 
                 onclick="closePlayer()" 
                 class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 flex items-center justify-center text-gray-200 font-bold text-base cursor-pointer border border-gray-700 flex-shrink-0">
@@ -107,12 +104,13 @@
             </video>
         </div>
 
-        <!-- Barra Inferiore con Tasto Scarica rialzato per iOS -->
+        <!-- Barra Inferiore con Tasto Scarica via Drive (Alternativa B) -->
         <div class="w-full bg-[#121318]/95 border-t border-gray-800 px-4 pt-3 safe-bottom flex justify-center">
             <a 
                 id="playerDownloadBtn" 
                 href="#" 
                 target="_blank" 
+                rel="noopener noreferrer"
                 class="w-full sm:w-auto max-w-xs bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 text-center shadow-lg">
                 ⬇ SCARICA QUESTA PARTITA
             </a>
@@ -194,7 +192,10 @@
                 matchLabel,
                 phase,
                 createdTime: file.createdTime,
-                streamUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`
+                // Flusso binario API per il player HTML5 interno
+                streamUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`,
+                // Link pagina file Drive: permette il download pulito e "Salva video" su rullino iOS
+                driveViewUrl: `https://drive.google.com/file/d/${file.id}/view`
             };
         }
 
@@ -242,13 +243,12 @@
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button 
-                            onclick="openPlayer('${v.streamUrl}', '${v.rawName.replace(/'/g, "\\'")}')" 
+                            onclick="openPlayer('${v.streamUrl}', '${v.rawName.replace(/'/g, "\\'")}', '${v.driveViewUrl}')" 
                             class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
                             ▶ GUARDA
                         </button>
                         <a 
-                            href="${v.streamUrl}" 
-                            download="${v.rawName}.mp4"
+                            href="${v.driveViewUrl}" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             class="w-full bg-[#20232c] hover:bg-gray-700 active:scale-95 text-gray-200 font-bold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center cursor-pointer">
@@ -284,21 +284,20 @@
             input.focus();
         }
 
-        function openPlayer(streamUrl, title) {
+        function openPlayer(streamUrl, title, driveViewUrl) {
             const overlay = document.getElementById('playerOverlay');
             const video = document.getElementById('nativeVideo');
             const titleEl = document.getElementById('playerTitle');
             const downloadBtn = document.getElementById('playerDownloadBtn');
 
             titleEl.textContent = title;
-            downloadBtn.href = streamUrl;
-            downloadBtn.setAttribute('download', `${title}.mp4`);
+            downloadBtn.href = driveViewUrl;
 
             video.src = streamUrl;
             overlay.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            video.play().catch(e => console.log("Riproduzione interrotta o richiesta manuale"));
+            video.play().catch(e => console.log("Riproduzione manuale richiesta"));
         }
 
         function closePlayer() {
