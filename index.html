@@ -104,15 +104,13 @@
             </video>
         </div>
 
-        <!-- Barra Inferiore con Tasto Scarica Diretto -->
+        <!-- Barra Inferiore con Tasto Scarica / Salva Video su iOS -->
         <div class="w-full bg-[#121318]/95 border-t border-gray-800 px-4 pt-3 safe-bottom flex justify-center">
-            <a 
+            <button 
                 id="playerDownloadBtn" 
-                href="#" 
-                download
-                class="w-full sm:w-auto max-w-xs bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 text-center shadow-lg">
+                class="w-full sm:w-auto max-w-xs bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 text-center shadow-lg cursor-pointer">
                 ⬇ SCARICA QUESTA PARTITA
-            </a>
+            </button>
         </div>
     </div>
 
@@ -121,7 +119,6 @@
     </footer>
 
     <script>
-        // ENDPOINT PUBBLICO INDICE JSON CLOUDFLARE R2
         const CATALOG_URL = 'https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/lista_video.json';
 
         let allVideos = [];
@@ -138,7 +135,6 @@
             errorBox.classList.add('hidden');
 
             try {
-                // Richiede l'indice JSON con timestamp cache-busting per smartphone
                 const res = await fetch(`${CATALOG_URL}?t=${Date.now()}`);
                 
                 if (!res.ok) {
@@ -242,16 +238,61 @@
                             class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-black font-black text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
                             ▶ GUARDA
                         </button>
-                        <a 
-                            href="${v.url}" 
-                            download="${v.fileName}"
+                        <button 
+                            onclick="handleDownload('${v.url}', '${v.rawName.replace(/'/g, "\\'")}', this)" 
                             class="w-full bg-[#20232c] hover:bg-gray-700 active:scale-95 text-gray-200 font-bold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center cursor-pointer">
                             ⬇ SCARICA
-                        </a>
+                        </button>
                     </div>
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        // Funzione universale di download / salvataggio su iOS
+        async function handleDownload(videoUrl, title, btnElement) {
+            const originalText = btnElement ? btnElement.innerHTML : '';
+            if (btnElement) {
+                btnElement.innerHTML = '⏳ PREPARAZIONE...';
+                btnElement.style.pointerEvents = 'none';
+            }
+
+            try {
+                const response = await fetch(videoUrl);
+                const blob = await response.blob();
+                const safeName = `${title.replace(/[\/\\?%*:|"<>]/g, '_')}.mp4`;
+                const file = new File([blob], safeName, { type: 'video/mp4' });
+
+                // Se supportato (Safari su iOS), apre il foglio di condivisione di sistema con "Salva video"
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: title
+                    });
+                } else {
+                    // Fallback per Android, PC o browser che non supportano la condivisione file
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = safeName;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                        a.remove();
+                    }, 1000);
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error("Errore download:", err);
+                    window.open(videoUrl, '_blank');
+                }
+            } finally {
+                if (btnElement) {
+                    btnElement.innerHTML = originalText;
+                    btnElement.style.pointerEvents = 'auto';
+                }
+            }
         }
 
         function filterVideos() {
@@ -285,8 +326,7 @@
             const downloadBtn = document.getElementById('playerDownloadBtn');
 
             titleEl.textContent = title;
-            downloadBtn.href = videoUrl;
-            downloadBtn.setAttribute('download', fileName);
+            downloadBtn.onclick = () => handleDownload(videoUrl, title, downloadBtn);
 
             video.src = videoUrl;
             overlay.classList.remove('hidden');
