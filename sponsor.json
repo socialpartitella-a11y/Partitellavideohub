@@ -1,18 +1,18 @@
 [
   {
-    "name": "Pizzeria Da Mario",
+    "name": "TC Sistem",
     "tag": "MAIN SPONSOR",
-    "claim": "La vera pizza napoletana dopo ogni match di Partitella 🍕",
-    "ctaText": "SCOPRI IL MENU",
-    "link": "https://instagram.com",
-    "logoUrl": "pizzeriamario.png"
+    "claim": "Voip, Networking, Sicurezza",
+    "ctaText": "VISITA IL SITO",
+    "link": "https://www.tcsistem.it",
+    "logoUrl": "tc.png"
   },
   {
-    "name": "Ottica Rossi",
-    "tag": "PARTNER UFFICIALE",
-    "claim": "Non perderti neanche un gol. Occhiali e lenti per lo sport.",
+    "name": "Number Twelve",
+    "tag": "PARTNER TECNICO",
+    "claim": "Sogna, osa, credi",
     "ctaText": "VISITA IL SITO",
-    "link": "https://google.com",
-    "logoUrl": "otticarossi.png"
+    "link": "https://numbertwelve.it",
+    "logoUrl": "numbertwelve.png"
   }
 ]
