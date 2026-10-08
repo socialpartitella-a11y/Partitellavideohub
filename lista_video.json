@@ -1,62 +1,137 @@
 [
-    {
-        "title": "SBIZ vs SBRUZ - Match 4 - Campionato",
-        "filename": "SBIZ vs SBRUZ - Match 4 - Campionato.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "SALAMI vs LONZE - Match 1 - Campionato",
-        "filename": "SALAMI vs LONZE - Match 1 - Campionato.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "SALAMI vs LONZE - Match 1 - Campionato (2)",
-        "filename": "SALAMI vs LONZE - Match 1 - Campionato (2).mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_GIRONI_match5 - AAAA vs BBBBB",
-        "filename": "comp_GIRONI_match5 - AAAA vs BBBBB.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_GIRONI_match4 - SBIZ vs SBRUZ",
-        "filename": "comp_GIRONI_match4 - SBIZ vs SBRUZ.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_GIRONI_match3 - SAHID vs MAHUD",
-        "filename": "comp_GIRONI_match3 - SAHID vs MAHUD.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_GIRONI_match3 - SAH vs MAH",
-        "filename": "comp_GIRONI_match3 - SAH vs MAH.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_GIRONI_match2 - BUZIR vs STRUZIR",
-        "filename": "comp_GIRONI_match2 - BUZIR vs STRUZIR.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_GIRONI_match1 - TEAM_A vs TEAM_B",
-        "filename": "comp_GIRONI_match1 - TEAM_A vs TEAM_B.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_GIRONI_match1 - SALAMINI vs PROSCIUTTI",
-        "filename": "comp_GIRONI_match1 - SALAMINI vs PROSCIUTTI.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "comp_BUZIR vs STRUZIR - Match 2 - Campionato",
-        "filename": "comp_BUZIR vs STRUZIR - Match 2 - Campionato.mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    },
-    {
-        "title": "BUZIR vs STRUZIR - Match 2 - Campionato (2)",
-        "filename": "BUZIR vs STRUZIR - Match 2 - Campionato (2).mp4",
-        "url": "https://drive.google.com/uc?export=download&id=INSERISCI_ID_O_LINK"
-    }
+  {
+    "title": "9. Scarsenal - Black Devils",
+    "filename": "9. Scarsenal - Black Devils.mp4",
+    "teamA": "9. Scarsenal - Black Devils",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/9.%20Scarsenal%20-%20Black%20Devils.mp4"
+  },
+  {
+    "title": "8. Riabilita Sabaudia - 4x4",
+    "filename": "8. Riabilita Sabaudia - 4x4.mp4",
+    "teamA": "8. Riabilita Sabaudia - 4x4",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/8.%20Riabilita%20Sabaudia%20-%204x4.mp4"
+  },
+  {
+    "title": "7. San Luca - Angels of Aprilia",
+    "filename": "7. San Luca - Angels of Aprilia.mp4",
+    "teamA": "7. San Luca - Angels of Aprilia",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/7.%20San%20Luca%20-%20Angels%20of%20Aprilia.mp4"
+  },
+  {
+    "title": "6. Black Devils - 4x4",
+    "filename": "6. Black Devils - 4x4.mp4",
+    "teamA": "6. Black Devils - 4x4",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/6.%20Black%20Devils%20-%204x4.mp4"
+  },
+  {
+    "title": "5. Scarsenal - Angels of Aprilia",
+    "filename": "5. Scarsenal - Angels of Aprilia.mp4",
+    "teamA": "5. Scarsenal - Angels of Aprilia",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/5.%20Scarsenal%20-%20Angels%20of%20Aprilia.mp4"
+  },
+  {
+    "title": "4. San Luca - Riabilita Sabaudia",
+    "filename": "4. San Luca - Riabilita Sabaudia.mp4",
+    "teamA": "4. San Luca - Riabilita Sabaudia",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/4.%20San%20Luca%20-%20Riabilita%20Sabaudia.mp4"
+  },
+  {
+    "title": "3. Angels of Aprilia - 4x4",
+    "filename": "3. Angels of Aprilia - 4x4.mp4",
+    "teamA": "3. Angels of Aprilia - 4x4",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/3.%20Angels%20of%20Aprilia%20-%204x4.mp4"
+  },
+  {
+    "title": "2. Riabilita Sabaudia - Black Devils",
+    "filename": "2. Riabilita Sabaudia - Black Devils.mp4",
+    "teamA": "2. Riabilita Sabaudia - Black Devils",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/2.%20Riabilita%20Sabaudia%20-%20Black%20Devils.mp4"
+  },
+  {
+    "title": "16. Finale. 4x4 - Scarsenal",
+    "filename": "16. Finale. 4x4 - Scarsenal.mp4",
+    "teamA": "16. Finale. 4x4 - Scarsenal",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/16.%20Finale.%204x4%20-%20Scarsenal.mp4"
+  },
+  {
+    "title": "15. Semifinale 2. Black Devils - 4x4",
+    "filename": "15. Semifinale 2. Black Devils - 4x4.mp4",
+    "teamA": "15. Semifinale 2. Black Devils - 4x4",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/15.%20Semifinale%202.%20Black%20Devils%20-%204x4.mp4"
+  },
+  {
+    "title": "14. Semifinale 1. Scarsenal - Riabilita Sabaudia",
+    "filename": "14. Semifinale 1. Scarsenal - Riabilita Sabaudia.mp4",
+    "teamA": "14. Semifinale 1. Scarsenal - Riabilita Sabaudia",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/14.%20Semifinale%201.%20Scarsenal%20-%20Riabilita%20Sabaudia.mp4"
+  },
+  {
+    "title": "13. Spareggio semifinale. San Luca - 4x4",
+    "filename": "13. Spareggio semifinale. San Luca - 4x4.mp4",
+    "teamA": "13. Spareggio semifinale. San Luca - 4x4",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/13.%20Spareggio%20semifinale.%20San%20Luca%20-%204x4.mp4"
+  },
+  {
+    "title": "12. Black Devils - Angels of Aprilia",
+    "filename": "12. Black Devils - Angels of Aprilia.mp4",
+    "teamA": "12. Black Devils - Angels of Aprilia",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/12.%20Black%20Devils%20-%20Angels%20of%20Aprilia.mp4"
+  },
+  {
+    "title": "11. Riabilita Sabaudia - Scarsenal",
+    "filename": "11. Riabilita Sabaudia - Scarsenal.mp4",
+    "teamA": "11. Riabilita Sabaudia - Scarsenal",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/11.%20Riabilita%20Sabaudia%20-%20Scarsenal.mp4"
+  },
+  {
+    "title": "10. 4x4 - San Luca",
+    "filename": "10. 4x4 - San Luca.mp4",
+    "teamA": "10. 4x4 - San Luca",
+    "teamB": "",
+    "matchLabel": "",
+    "phase": "Partite",
+    "url": "https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/10.%204x4%20-%20San%20Luca.mp4"
+  }
 ]
