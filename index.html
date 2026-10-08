@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Partitella TV - Archivio Live</title>
+    <title>Partitella Live</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .smooth-scroll {
@@ -20,14 +20,17 @@
 </head>
 <body class="bg-[#0b0c10] text-gray-100 min-h-screen flex flex-col font-sans selection:bg-[#fd5300] selection:text-white">
 
-    <!-- Header Full Width Responsive -->
-    <header class="w-full bg-[#121318] border-b border-gray-800/80 sticky top-0 z-30 shadow-md overflow-hidden">
+   <!-- Header Full Width Responsive: partitellalivedesk.png su desktop (>= 768px), partitellalive2.png su mobile -->
+<header class="w-full bg-[#121318] border-b border-gray-800/80 sticky top-0 z-30 shadow-md overflow-hidden">
+    <picture>
+        <source media="(min-width: 768px)" srcset="partitellalivedesk.png">
         <img 
             src="partitellalive2.png" 
             alt="Partitella Live" 
             class="w-full h-auto object-cover block"
         >
-    </header>
+    </picture>
+</header>
 
     <main class="max-w-3xl mx-auto px-4 py-5 flex-grow w-full">
 
@@ -118,10 +121,44 @@
         </div>
     </div>
 
-    <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-900 bg-[#0d0e12]">
-        Partitella Hub — Powered by Sbrus
-    </footer>
+   <!-- Sezione Partner Tecnici & Powered By (Ingrandita e Verticale) -->
+    <section class="w-full max-w-3xl mx-auto px-4 pt-10 pb-6">
+        <div class="bg-transparent flex flex-col items-center justify-center gap-7 py-4">
+            
+            <!-- Powered by: TC Sistem -->
+            <div class="flex flex-col items-center justify-center gap-2.5 text-center">
+                <span class="text-xs uppercase font-extrabold tracking-widest text-gray-400">
+                    POWERED BY
+                </span>
+                <img 
+                    src="tctrasp.png" 
+                    alt="TC Sistem" 
+                    class="h-20 sm:h-20 w-auto max-w-[260px] object-contain drop-shadow-md brightness-95 hover:brightness-100 transition"
+                >
+            </div>
 
+            <!-- Separatore sottile -->
+            <div class="w-20 h-px bg-gray-800"></div>
+
+            <!-- Partner Tecnico: Number Twelve -->
+            <div class="flex flex-col items-center justify-center gap-2.5 text-center">
+                <span class="text-xs uppercase font-extrabold tracking-widest text-gray-400">
+                    PARTNER TECNICO
+                </span>
+                <img 
+                    src="n12trasp2.png" 
+                    alt="Number Twelve" 
+                    class="h-14 sm:h-16 w-auto max-w-[220px] object-contain drop-shadow-md brightness-95 hover:brightness-100 transition"
+                >
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer Copyright -->
+    <footer class="py-5 text-center text-xs text-gray-500 border-t border-gray-900 bg-[#0d0e12]">
+        Partitella Live Hub - Powered by Partitella (TM) 2026
+    </footer>
     <script>
         const CATALOG_URL = 'https://pub-09ef3723da454cfba3c9f84e9b9c04f1.r2.dev/lista_video.json';
         const SPONSOR_URL = 'sponsor.json';
